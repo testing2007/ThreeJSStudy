@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>My first three.js app</title>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="c"></canvas>
+  <script type="module">
+    import * as THREE from './node_modules/three/src/Three.js';
+    
+    var renderer, camera, scene, geometry
+    //一个mesh可以通过 不同material + 相同几何体geometry 创建, 例如test2
+
+    function main() {
+      // 1: 定义渲染器
+      const canvas = document.querySelector('#c');
+      renderer = new THREE.WebGLRenderer({ canvas });
+
+      // 2: 摄像头
+      const fov = 75;
+      const aspect = 2;  // 相机默认值
+      const near = 0.1;
+      const far = 5;
+      camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+      camera.position.z = 2;
+
+      // 3: 创建场景
+      scene = new THREE.Scene();
+
+      // 4: 网格（几何体+材质）
+      // 4.1 几何体
+      const boxWidth = 1;
+      const boxHeight = 1;
+      const boxDepth = 1;
+      geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+
+      test2();//test1
+    }
+
+    function test1() {
+      // 创建材质 (MeshBasicMaterial, MeshPhongMaterial)
+      const material = new THREE.MeshBasicMaterial({ color: 0x44aa88 });
+
+      const cube = new THREE.Mesh(geometry, material);
+      scene.add(cube)
+
+      draw()
+
+      function draw() {
+        requestAnimationFrame(draw)
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        renderer.render(scene, camera)
+      }
+    }
+
+    function test2() {
+      // 组装
+      const cubes = [
+        _makeInstance(geometry, 0x44aa88, 0),
+        _makeInstance(geometry, 0x8844aa, -2),
+        _makeInstance(geometry, 0xaa8844, 2),
+      ];
+
+      // 创建光照: MeshPhongMaterial 材质受光照影响，如果没有光照则看不见
+      const color = 0xFFFFFF;
+      const intensity = 1;
+      const light = new THREE.DirectionalLight(color, intensity);
+      light.position.set(-1, 2, 4);
+      scene.add(light);
+
+      // 绘制
+      draw()
+      function draw() {
+        requestAnimationFrame(draw)
+        cubes.forEach((cube, ndx) => {
+          cube.rotation.x += 0.01;
+          cube.rotation.y += 0.01;
+        });
+        renderer.render(scene, camera)
+      }
+
+      function _makeInstance(geometry, color, x) {
+
+        const material = new THREE.MeshPhongMaterial({ color });
+        console.log("geometry", geometry)
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        cube.position.x = x;
+        console.log("sss", cube)
+        return cube;
+      }
+    }
+
+    window.onload = main
+  </script>
+</body>
+
+</html>

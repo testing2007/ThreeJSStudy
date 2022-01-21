@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>My first three.js app</title>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- <div id="container" style="width:1000px; height:800px;"></div> -->
+  <canvas id="container"></canvas>
+  <!-- <script src="js/three.js"></script> -->
+  <script type="module">
+    import * as THREE from './node_modules/three/src/Three.js';
+    // import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
+    import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
+    // 如果返回的不是未定义，说明threejs成功引入
+    // console.log('打印场景API',THREE.Scene);
+
+    var scene, camera, renderer;
+    var cube;
+    function initThree() {
+      //场景
+      scene = new THREE.Scene();
+      //镜头
+      camera = new THREE.PerspectiveCamera(90, document.body.clientWidth / document.body.clientHeight, 0.1, 100);
+      //camera的位置在x0,y0,z3，还记得迪尔卡右手坐标系吗？
+      camera.position.set(0, 0, 3);
+      //渲染器
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(document.body.clientWidth, document.body.clientHeight);
+      document.getElementById("container").appendChild(renderer.domElement);
+
+      //镜头控制器
+      var controls = new OrbitControls(camera, renderer.domElement);
+
+      //一会儿在这里添加3D物体
+      const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+      const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+      cube = new THREE.Mesh( geometry, material );
+      scene.add( cube );
+
+
+      loop();
+    }
+    function loop() {
+      requestAnimationFrame(loop);
+      // cube.rotation.x += 0.1;
+      // cube.rotation.y += 0.1;
+      renderer.render(scene, camera);
+    }
+    window.onload = initThree;
+  </script>
+</body>
+
+</html>
