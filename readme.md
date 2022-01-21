@@ -5,7 +5,8 @@
 * npm init
 * npm install —save three #安装three.js依赖包
 * 找到index.html 
-  <script type="module">
+```js
+<script type="module">
       import * as THREE from './node_modules/three/src/Three.js';
       var scene, camera, renderer;
       function initThree(){
@@ -15,7 +16,8 @@
       function loop(){
       }
       window.onload = initThree;
-  </script>
+</script>
+```
 * 使用python3内置服务器 python3 -m http.server [port] , 然后选择 01.html 就可以预览了
 * resources: 来源于 threejs 源代码中的资源文件
 
@@ -31,15 +33,29 @@
   * blender 软件
 
 #### Demo （https://threejs.org/manual/）
-开发工具：vscode
-服务启动： python3 -m http.server 8300  #8300是端口号
-命令行网络代理：export https_proxy=127.0.0.1:9999
-例子
-[01basic] -- 基础
-[03scene] -- 场景
-[05texture] -- 纹理, 做了简单封装
+1. 开发工具：vscode
+2. 服务启动： python3 -m http.server 8300  #8300是端口号
+3. 命令行网络代理：export https_proxy=127.0.0.1:9999
+4. 例子
+* [01basic] -- 基础
+* [03scene] -- 场景
+* [05texture] -- 纹理, 做了简单封装
 
-#### 术语
+
+
+
+
+
+
+
+
+
+
+
+
+#### 其他
+
+##### 术语
 * 场景 scene
 * 摄像头 camera
     * 透视相机 perspectiveCamera
@@ -76,7 +92,7 @@
     * pointLight -- 点光源，类似灯泡
     * spotLight -- 聚光灯，类似舞台聚光灯
 
-#### 参考资料
+##### 参考资料
 * [官方文档](https://threejs.org/docs/index.html#manual/zh/introduction/Creating-a-scene)
 * [基础参考手册](https://threejs.org/manual/#zh/fundamentals)
 * [three.js 在线编辑器](https://threejs.org/editor/), 还有 blender 等软件
