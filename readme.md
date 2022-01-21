@@ -47,8 +47,10 @@
 
 #### 环境搭建
 * vscode 然后创建文件夹, 比如3D
-* 创建01.html,
-    ><script type="module">
+* npm init
+* npm install —save three #安装three.js依赖包
+* 找到index.html 
+  <script type="module">
       import * as THREE from './node_modules/three/src/Three.js';
       var scene, camera, renderer;
       function initThree(){
@@ -58,10 +60,9 @@
       function loop(){
       }
       window.onload = initThree;
-    </script>
-* npm init
-* npm install —save three #安装three.js依赖包
+  </script>
 * 使用python3内置服务器 python3 -m http.server [port] , 然后选择 01.html 就可以预览了
+* resources: 来源于 threejs 源代码中的资源文件
 
 #### 模型支持的格式 
   * obj: 
@@ -76,7 +77,8 @@
 
 #### Demo （https://threejs.org/manual/）
 开发工具：vscode
-服务启动： python3 -m http.server 8300
+服务启动： python3 -m http.server 8300  #8300是端口号
+命令行网络代理：export https_proxy=127.0.0.1:9999
 例子
 [01basic] -- 基础
 [03scene] -- 场景
