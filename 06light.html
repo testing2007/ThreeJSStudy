@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- <meta charset="utf-8"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>My first three.js app</title>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    #c {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="c"></canvas>
+  <script type="module">
+    import * as THREE from './node_modules/three/src/Three.js';
+    import { GUI } from './node_modules/three/examples/jsm/libs/lil-gui.module.min.js';
+    import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';//让相机围绕点旋转
+
+    import XAxisGridHelper from './utility/XAxisGridHelper.js';
+    import XDegRadHelper from './utility/XDegRadHelper.js';
+    import XStringToNumberHelper from './utility/XStringToNumberHelper.js';
+    import XColorGUIHelper from './utility/XColorGUIHelper.js';
+    import XDraw from './utility/XDraw.js';
+
+    var renderer, camera, scene, geometry
+    const cubes = [];  // just an array we can use to rotate the cubes
+
+    //一个mesh可以通过 不同material + 相同几何体geometry 创建, 例如test2
+    function main() {
+      // 1: 定义渲染器
+      const canvas = document.querySelector('#c');
+      renderer = new THREE.WebGLRenderer({ canvas });
+
+      // 2: 把摄像头放在原点的正上方向下看
+      const fov = 45;
+      const aspect = 2;  //canvas 的默认宽高 300:150
+      const near = 0.1;
+      const far = 100;
+      camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+      camera.position.set(0, 10, 20)
+
+      // 3: 创建场景
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color('black');
+
+      // 4: 业务逻辑
+      const controls = new OrbitControls(camera, canvas);
+      controls.target.set(0, 5, 0);
+      controls.update();
+
+      _doLogic()
+
+      // 5: 绘制
+      const drawObj = new XDraw(renderer, scene, camera, null)
+      drawObj.draw()
+    }
+
+    function _doLogic() {
+
+
+
+      {
+        const planeSize = 40;
+
+        const loader = new THREE.TextureLoader();
+        const texture = loader.load('resources/images/checker.png');
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.magFilter = THREE.NearestFilter;
+        const repeats = planeSize / 2;
+        texture.repeat.set(repeats, repeats);
+
+        const planeGeo = new THREE.PlaneGeometry(planeSize, planeSize);
+        const planeMat = new THREE.MeshPhongMaterial({
+          map: texture,
+          side: THREE.DoubleSide,
+        });
+        const mesh = new THREE.Mesh(planeGeo, planeMat);
+        mesh.rotation.x = Math.PI * -.5;
+        scene.add(mesh);
+      }
+      {
+        const cubeSize = 4;
+        const cubeGeo = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+        const cubeMat = new THREE.MeshPhongMaterial({ color: '#8AC' });
+        const mesh = new THREE.Mesh(cubeGeo, cubeMat);
+        mesh.position.set(cubeSize + 1, cubeSize / 2, 0);
+        scene.add(mesh);
+      }
+      var mesh 
+      {
+        const sphereRadius = 3;
+        const sphereWidthDivisions = 32;
+        const sphereHeightDivisions = 16;
+        const sphereGeo = new THREE.SphereGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
+        const sphereMat = new THREE.MeshPhongMaterial({ color: '#CA8' });
+        mesh = new THREE.Mesh(sphereGeo, sphereMat);
+        mesh.position.set(-sphereRadius - 1, sphereRadius + 2, 0);
+        scene.add(mesh);
+      }
+
+      {
+        const color = 0xFFFFFF;
+        const intensity = 1;
+        const light = new THREE.AmbientLight(color, intensity);
+        scene.add(light);
+
+        const gui = new GUI();
+        gui.addColor(new XColorGUIHelper(light, 'color'), 'value').name('color');
+        gui.add(light, 'intensity', 0, 2, 0.01);
+      }
+
+      // 方便调试：为每个节点添加一个AxesHelper （红色- X，绿色-Y, 蓝色-Z）
+      const gui = new GUI();
+      function makeAxisGrid(node, label, units) {
+        const helper = new XAxisGridHelper(node, units);
+        gui.add(helper, 'visible').name(label);
+      }
+      makeAxisGrid(mesh, 'mesh', 26);
+
+      // gui.add(new XStringToNumberHelper(texture, 'wrapS'), 'value', wrapModes)
+      //   .name('texture.wrapS')
+      //   .onChange(updateTexture);
+      // gui.add(new XStringToNumberHelper(texture, 'wrapT'), 'value', wrapModes)
+      //   .name('texture.wrapT')
+      //   .onChange(updateTexture);
+      // gui.add(texture.repeat, 'x', 0, 5, .01).name('texture.repeat.x');
+      // gui.add(texture.repeat, 'y', 0, 5, .01).name('texture.repeat.y');
+      // gui.add(texture.offset, 'x', -2, 2, .01).name('texture.offset.x');
+      // gui.add(texture.offset, 'y', -2, 2, .01).name('texture.offset.y');
+      // gui.add(texture.center, 'x', -.5, 1.5, .01).name('texture.center.x');
+      // gui.add(texture.center, 'y', -.5, 1.5, .01).name('texture.center.y');
+      // gui.add(new XDegRadHelper(texture, 'rotation'), 'value', -360, 360)
+      //   .name('texture.rotation');
+    }
+
+    window.onload = main
+  </script>
+</body>
+
+</html>
+
+<!-- 
+加载多个材质
+const materials = [
+  new THREE.MeshBasicMaterial({ map: loader.load('resources/images/flower-1.jpg') }),
+  new THREE.MeshBasicMaterial({ map: loader.load('resources/images/flower-2.jpg') }),
+  new THREE.MeshBasicMaterial({ map: loader.load('resources/images/flower-3.jpg') }),
+  new THREE.MeshBasicMaterial({ map: loader.load('resources/images/flower-4.jpg') }),
+  new THREE.MeshBasicMaterial({ map: loader.load('resources/images/flower-5.jpg') }),
+  new THREE.MeshBasicMaterial({ map: loader.load('resources/images/flower-6.jpg') }),
+];
+const cube = new THREE.Mesh(geometry, materials); 
+-->

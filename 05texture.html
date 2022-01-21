@@ -26,6 +26,8 @@
     import * as THREE from './node_modules/three/src/Three.js';
     import { GUI } from './node_modules/three/examples/jsm/libs/lil-gui.module.min.js';
     import XAxisGridHelper from './utility/XAxisGridHelper.js';
+    import XDegRadHelper from './utility/XDegRadHelper.js';
+    import XStringToNumberHelper from './utility/XStringToNumberHelper.js';
     import XDraw from './utility/XDraw.js';
 
     var renderer, camera, scene, geometry
@@ -52,7 +54,7 @@
       _doLogic()
 
       // 5: 绘制
-      const drawObj = new XDraw(renderer, scene, camera, ()=>{
+      const drawObj = new XDraw(renderer, scene, camera, () => {
         cubes.forEach((cube, ndx) => {
           const speed = .2 + ndx * .1;
           // const rot = time * speed;
@@ -70,13 +72,23 @@
       geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
 
       const loader = new THREE.TextureLoader();
-
+      const texture = loader.load('resources/images/wall.jpg');
       const material = new THREE.MeshBasicMaterial({
-        map: loader.load('./resources/images/wall.jpg'),
+        map: texture,
       });
       const cube = new THREE.Mesh(geometry, material);
       scene.add(cube);
       cubes.push(cube);  // add to our list of cubes to rotate
+
+      const wrapModes = {
+        'ClampToEdgeWrapping': THREE.ClampToEdgeWrapping,
+        'RepeatWrapping': THREE.RepeatWrapping,
+        'MirroredRepeatWrapping': THREE.MirroredRepeatWrapping,
+      };
+
+      function updateTexture() {
+        texture.needsUpdate = true;
+      }
 
       // 方便调试：为每个节点添加一个AxesHelper （红色- X，绿色-Y, 蓝色-Z）
       const gui = new GUI();
@@ -85,6 +97,21 @@
         gui.add(helper, 'visible').name(label);
       }
       makeAxisGrid(cube, 'cube', 26);
+
+      gui.add(new XStringToNumberHelper(texture, 'wrapS'), 'value', wrapModes)
+        .name('texture.wrapS')
+        .onChange(updateTexture);
+      gui.add(new XStringToNumberHelper(texture, 'wrapT'), 'value', wrapModes)
+        .name('texture.wrapT')
+        .onChange(updateTexture);
+      gui.add(texture.repeat, 'x', 0, 5, .01).name('texture.repeat.x');
+      gui.add(texture.repeat, 'y', 0, 5, .01).name('texture.repeat.y');
+      gui.add(texture.offset, 'x', -2, 2, .01).name('texture.offset.x');
+      gui.add(texture.offset, 'y', -2, 2, .01).name('texture.offset.y');
+      gui.add(texture.center, 'x', -.5, 1.5, .01).name('texture.center.x');
+      gui.add(texture.center, 'y', -.5, 1.5, .01).name('texture.center.y');
+      gui.add(new XDegRadHelper(texture, 'rotation'), 'value', -360, 360)
+        .name('texture.rotation');
     }
 
     window.onload = main
@@ -92,3 +119,16 @@
 </body>
 
 </html>
+
+<!-- 
+加载多个材质
+const materials = [
+  new THREE.MeshBasicMaterial({ map: loader.load('resources/images/flower-1.jpg') }),
+  new THREE.MeshBasicMaterial({ map: loader.load('resources/images/flower-2.jpg') }),
+  new THREE.MeshBasicMaterial({ map: loader.load('resources/images/flower-3.jpg') }),
+  new THREE.MeshBasicMaterial({ map: loader.load('resources/images/flower-4.jpg') }),
+  new THREE.MeshBasicMaterial({ map: loader.load('resources/images/flower-5.jpg') }),
+  new THREE.MeshBasicMaterial({ map: loader.load('resources/images/flower-6.jpg') }),
+];
+const cube = new THREE.Mesh(geometry, materials); 
+-->
